@@ -5,11 +5,25 @@ import re
 
 #! File to store user credentials
 USER_DATA_FILE = '12325170.csv'
+LOGS_FILE = 'logs.doc'
 
 #! Stock API configuration
 API_URL = 'https://www.alphavantage.co/query'
-API_KEY = 'O0EYQTAJSX2XIIB8'  # Your Alpha Vantage API Key
+API_KEY = 'O0EYQTAJSX2XIIB8'  
 MAX_ATTEMPTS = 5
+
+#! saving logs of user
+def save_logs(logMessage):
+    try:
+     f = open(LOGS_FILE, mode="a")
+     f.write(logMessage)
+     f.write("\n")
+    except FileNotFoundError:
+     print("error while crearing file")
+    finally:
+     f.close()
+
+
 
 #! Validate email format
 def validate_email(email):
@@ -48,6 +62,8 @@ def update_attempts(email, attempts):
         with open(USER_DATA_FILE, mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(users)
+            #! log saved
+            save_logs("Log: Login count updated")
     except Exception as e:
         print(f"Error updating attempts: {e}")
 
@@ -72,11 +88,12 @@ def signup():
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     security_question = input("Enter your school name: ")
 
-    # Write new user data to the CSV file
     try:
         with open(USER_DATA_FILE, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([email, hashed_password.decode('utf-8'), security_question, str(MAX_ATTEMPTS)])
+        #! log saved
+        save_logs("Log: Sign Successful")
         print("Signup successful! You can now log in.")
     except Exception as e:
         print(f"An error occurred while saving user data: {e}")
@@ -97,7 +114,7 @@ def login():
       try:
           with open(USER_DATA_FILE, mode='r') as file:
               users = list(csv.reader(file))
-
+              
           for row in users:
               # Check if the row has the correct number of elements
               if len(row) < 4:
@@ -112,6 +129,11 @@ def login():
 
                   if bcrypt.checkpw(password.encode('utf-8'), row[1].encode('utf-8')):
                       print("Login successful!")
+                    #! saving logs
+                      f = open(LOGS_FILE, mode="a",newline='')
+                      f.write("Log: Succesfully Login By: ")
+                      f.write(email)
+                      f.write("\n")
                       return True
                   else:
                       print(f"Incorrect password. {attempts - 1} attempts remaining.")
@@ -152,6 +174,8 @@ def reset_password():
                             writer = csv.writer(file)
                             writer.writerows(users)
                         print("Password reset successful!")
+                        #! Log saved
+                        save_logs("Log: Password reset Successful")
                         return
                     else:
                         print("New password does not meet the criteria.")
@@ -199,8 +223,10 @@ def fetch_stock_data(ticker_symbol):
             print("No data available for the given ticker symbol.")
     except requests.exceptions.ConnectionError:
         print("Network error: Please check your internet connection.")
+        save_logs("Log: Network Error")
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
+        save_logs("Log: Http Error")
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -218,19 +244,21 @@ def main():
             if login():
                 while True:
                     ticker_symbol = input("Enter stock ticker symbol (e.g., IBM): ").upper()
+                    save_logs("Log: featching results....")
                     fetch_stock_data(ticker_symbol)
 
                     more_search = input("Do you want to search for more tickers? (yes/no): ").lower()
                     if more_search != 'yes':
                         print("Logging out...")
+                        save_logs("Log: Loggin out")
                         break
         elif choice == '3':
             reset_password()
         elif choice == '4':
             print("Exiting application.")
+            save_logs("Log: Exit Application")
             break
         else:
             print("Invalid choice. Try again.")
 
-if __name__ == '__main__':
-    main()
+main()
