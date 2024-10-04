@@ -34,6 +34,14 @@ def validate_email(email):
 def validate_password(password):
     if len(password) < 8:
         return False
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"[a-z]", password):
+        return False
+    if not re.search(r"[0-9]", password):
+        return False
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False
     return True
 
 #! Check if user already exists in the CSV file
@@ -152,9 +160,12 @@ def login():
 #! Password reset using security question
 def reset_password():
     email = input("Enter registered email: ")
+    newStatus = "Password reset for: " + email
+    save_logs("Log: {newStatus}".format(newStatus=newStatus))
 
     if not validate_email(email):
         print("Invalid email format.")
+        save_logs("Log: Invalid format of email")
         return
 
     try:
@@ -163,7 +174,7 @@ def reset_password():
 
         for row in users:
             if row[0] == email:
-                security_answer = input("What is your school name?: ")
+                security_answer = input("What is your best friends name ? ")
                 if security_answer == row[2]:
                     new_password = input("Enter new password: ")
                     if validate_password(new_password):
@@ -179,9 +190,11 @@ def reset_password():
                         return
                     else:
                         print("New password does not meet the criteria.")
+                        save_logs("Log: New password does not meet the criteria.")
                         return
                 else:
                     print("Incorrect answer to security question.")
+                    save_logs("Log: Incorrect answer to security question.")
                     return
         print("Email not found.")
     except FileNotFoundError:
@@ -191,6 +204,9 @@ def reset_password():
 
 #! Fetch and display stock data for two days using Alpha Vantage API
 def fetch_stock_data(ticker_symbol):
+    newStatus = "Data Fetched for: " + ticker_symbol
+    save_logs("Log: {newStatus}".format(newStatus=newStatus))
+    save_logs("Log: fetching results....")
     params = {
         'function': 'TIME_SERIES_DAILY',
         'symbol': ticker_symbol,
@@ -244,8 +260,8 @@ def main():
             if login():
                 while True:
                     ticker_symbol = input("Enter stock ticker symbol (e.g., IBM): ").upper()
-                    save_logs("Log: featching results....")
                     fetch_stock_data(ticker_symbol)
+                    save_logs("Log: Showing results....")
 
                     more_search = input("Do you want to search for more tickers? (yes/no): ").lower()
                     if more_search != 'yes':
