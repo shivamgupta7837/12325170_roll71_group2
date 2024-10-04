@@ -93,7 +93,7 @@ def signup():
         print("Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, one number, and one special character.")
         return
 
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), b3crypt.gensalt())
     security_question = input("What is your best friends name ? ")
 
     try:

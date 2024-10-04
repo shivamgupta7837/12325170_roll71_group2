@@ -1,5 +1,4 @@
 Log: Sign Successful
-Log: Sign Successful
 Log: Succesfully Login By: ram@gmail.com
 Log: Data Fetched for: IBM
 Log: fetching results....
@@ -9,3 +8,8 @@ Log: fetching results....
 Log: Showing results....
 Log: Loggin out
 Log: Exit Application
+Log: Password reset for: shivam@gmail.com
+Log: Password reset for: ram@gmail.com
+Log: New password does not meet the criteria.
+Log: Password reset for: ram@gmail.com
+Log: Password reset Successful
