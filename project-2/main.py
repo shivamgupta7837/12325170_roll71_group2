@@ -94,7 +94,7 @@ def signup():
         return
 
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    security_question = input("Enter your school name: ")
+    security_question = input("What is your best friends name ? ")
 
     try:
         with open(USER_DATA_FILE, mode='a', newline='') as file:
