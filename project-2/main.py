@@ -93,7 +93,7 @@ def signup():
         print("Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, one number, and one special character.")
         return
 
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), b3crypt.gensalt())
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     security_question = input("What is your best friends name ? ")
 
     try:
@@ -124,11 +124,7 @@ def login():
               users = list(csv.reader(file))
               
           for row in users:
-              # Check if the row has the correct number of elements
-              if len(row) < 4:
-                  print(f"Error: Malformed row in user data file: {row}")
-                  continue  # Skip this row and go to the next one
-
+            
               if row[0] == email:
                   attempts = int(row[3])
                   if attempts <= 0:
@@ -215,7 +211,7 @@ def fetch_stock_data(ticker_symbol):
 
     try:
         response = requests.get(API_URL, params=params)
-        response.raise_for_status()  # Check for HTTP errors
+        response.raise_for_status()
 
         data = response.json()
 
@@ -225,7 +221,6 @@ def fetch_stock_data(ticker_symbol):
 
         time_series = data.get('Time Series (Daily)')
         if time_series:
-            # Fetch stock data for the last two days
             dates = list(time_series.keys())[:2]
             for date in dates:
                 stock_info = time_series[date]
